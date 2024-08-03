@@ -11,15 +11,17 @@ const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.htm
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data); // Array of product objects
 
-
 // Create slugs for each product and map them to product indices
-const slugs = dataObj.map(el => slugify(el.productName, { lower: true }));
+const slugs = dataObj.map((el) => slugify(el.productName, { lower: true }));
 const slugToProduct = dataObj.reduce((acc, el, index) => {
   acc[slugify(el.productName, { lower: true })] = index;
   return acc;
 }, {});
+
 //example for the slugToProduct array : if el.productName is "Fresh Avocados" and its index is 0, acc["fresh-avocados"] = 0.
+
 //slugToProduct will be an object mapping slugs to their corresponding product indices. For example, {"fresh-avocados": 0, "organic-bananas": 1}.
+
 //slugs will be an array of slugs corresponding to the product names in dataObj. For example, if dataObj contains products with names "Fresh Avocados" and "Organic Bananas", slugs will be ["fresh-avocados", "organic-bananas"].
 
 const server = http.createServer((req, res) => {
@@ -32,11 +34,11 @@ const server = http.createServer((req, res) => {
   // Overview page
   if (pathname === '/' || pathname === '/overview') {
     res.writeHead(200, { 'Content-Type': 'text/html' });
-    const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('');
+    const cardsHtml = dataObj.map((el) => replaceTemplate(tempCard, el)).join('');
     const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
     res.end(output);
 
-  // Product page with ID redirection
+    // Product page with ID redirection
   } else if (pathname === '/product') {
     const productId = query.id;
     if (productId !== undefined && slugToProduct[slugs[productId]] !== undefined) {
@@ -49,7 +51,7 @@ const server = http.createServer((req, res) => {
       res.end('<h1>Product not found!</h1>');
     }
 
-  // Product page with slug
+    // Product page with slug
   } else if (pathname.startsWith('/product/')) {
     const slug = pathname.replace('/product/', '').toLowerCase();
     console.log(`Requested slug: ${slug}`); // Diagnostic log
@@ -67,12 +69,12 @@ const server = http.createServer((req, res) => {
       res.end('<h1>Product not found!</h1>');
     }
 
-  // API
+    // API
   } else if (pathname === '/api') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(data);
 
-  // Not found
+    // Not found
   } else {
     res.writeHead(404, { 'Content-Type': 'text/html' });
     res.end('<h1>Page not found!</h1>');

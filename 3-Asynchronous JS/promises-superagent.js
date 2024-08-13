@@ -32,7 +32,10 @@ readFilePro(`${__dirname}/dog.txt`)
     console.log('Random dog image saved to file!');
   })
   .catch((err) => {
-    if (err.message === 'File not found 😢' || err.message === 'Could not write to file 😢') {
+    if (
+      err.message === 'File not found 😢' ||
+      err.message === 'Could not write to file 😢'
+    ) {
       console.error(err.message);
     } else if (err.response && err.response.status === 404) {
       console.error('Motherf****r, Invalid dog breed 😢');

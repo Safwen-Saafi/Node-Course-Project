@@ -58,6 +58,11 @@ const getDogPic = async () => {
   }
 })();
 
+//You create a function and you call it right away
+
+
+
+
 /*
 console.log('1: Will get dog pics!');
 getDogPic()

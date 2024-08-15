@@ -1,12 +1,12 @@
 const express = require('express');
-const morgan = require('morgan'); //Morgan is a popular logging middleware, allows to see requested log data right in the console
+const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
 
-//Middleware
 const app = express();
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 

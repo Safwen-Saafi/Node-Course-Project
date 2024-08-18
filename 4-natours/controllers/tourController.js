@@ -1,6 +1,7 @@
 const fs = require('fs');
+
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
 );
 
 exports.checkId = (req, res, next, val) => {
@@ -38,7 +39,7 @@ exports.getTour = (req, res) => {
     },
   });
 };
-// pp.get("/api/v1/tours/:id/:x/;y?", (req, res) => ..... with the ? you make that param optional
+// pp.get("/api/v1/tours/:id/:x/:y?", (req, res) => ..... with the ? you make that param optional
 
 exports.updateTour = (req, res) => {
   // console.log(req.params);
@@ -56,26 +57,28 @@ exports.deleteTour = (req, res) => {
   });
 };
 // res.status(204) 204 stands for null content because when deleting we return nothing
-// // res.status((500) 500 stands for internal server error
+// res.status((500) 500 stands for internal server error
 
 exports.createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
   console.log(req.body);
-  const newTour = Object.assign({ id: newId }, req.body);
+  // eslint-disable-next-line node/no-unsupported-features/es-syntax
+  const newTour = { id: newId, ...req.body };
   tours.push(newTour);
   fs.writeFile(
     `${__dirname}/starter/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
-    (err) => {
+    () => {
       res.status(201).json({
         status: 'success',
         data: {
           tours: newTour,
         },
       });
-    }
+    },
   );
 };
+// res.status((201) 201 stands for successfully created item
 
 exports.checkBody = (req, res, next) => {
   if (!req.body.name || !req.body.price) {
@@ -87,5 +90,5 @@ exports.checkBody = (req, res, next) => {
   next();
 };
 
-//The condition !req.body.price) is used to check if the price field is missing or falsy (i.e., undefined, null, 0, an empty string, etc.) in the request body. 
+//The condition !req.body.price) is used to check if the price field is missing or falsy (i.e., undefined, null, 0, an empty string, etc.) in the request body
 // If req.body.price is falsy, the condition will evaluate to true, triggering the associated block of code.

@@ -21,7 +21,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// 3) Routes
+//Routes
 app.use('/api/v1/tours', tourRouter);
 
 module.exports = app;

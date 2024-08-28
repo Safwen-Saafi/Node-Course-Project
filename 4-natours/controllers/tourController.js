@@ -132,7 +132,7 @@ exports.getTourStats = async (req, res) => {
         },
       },
       {
-        $sort: { avgPrice: 1 },
+        $sort: { avgPrice: -1 },
       },
       // {
       //   $match: { _id: { $ne: 'EASY' } }
@@ -145,6 +145,63 @@ exports.getTourStats = async (req, res) => {
       status: 'success',
       data: {
         stats,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1; // 2024
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+        // example of unwind:
+        //  db.inventory.insertOne({ "_id" : 1, "item" : "ABC1", sizes: [ "S", "M", "L"] })
+        //  =>
+        //  { "_id" : 1, "item" : "ABC1", "sizes" : "S" }
+        //  { "_id" : 1, "item" : "ABC1", "sizes" : "M" }
+        //  { "_id" : 1, "item" : "ABC1", "sizes" : "L" }
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numTourStarts: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $sort: { numTourStarts: -1 },
+      },
+      {
+        $limit: 12,
+      },
+    ]);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        plan,
       },
     });
   } catch (err) {

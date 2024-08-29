@@ -14,7 +14,7 @@ const dataObj = JSON.parse(data); // Array of product objects
 // Create slugs for each product and map them to product indices
 const slugs = dataObj.map((el) => slugify(el.productName, { lower: true }));
 const slugToProduct = dataObj.reduce((acc, el, index) => {
-  acc[slugify(el.productName, { lower: true })] = index;
+  acc[slugs[index]] = index;
   return acc;
 }, {});
 

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+// Errors that occur in our synchronous code and not handled, like a variable not declared
 process.on('uncaughtException', err => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
   console.log(err.name, err.message);
@@ -12,7 +13,8 @@ const app = require('./app');
 
 
 // console.log(process.env); Logs all of the env variables running in the process
-console.log(app.get('env')); //The output should be development
+//The output should be development
+// console.log(app.get('env')); 
 
 //Mongoose
 const DB = process.env.DATABASE.replace(
@@ -30,6 +32,8 @@ app.listen(port, () => {
   console.log(`Listening on port: ${port}...`);
 });
 
+
+// Errors that occur outside of our express app like connection errors to db
 process.on('unhandledRejection', err => {
   console.log('UNHANDLED REJECTION! 💥 Shutting down...');
   console.log(err.name, err.message);

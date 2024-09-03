@@ -5,7 +5,6 @@ const AppError = require('./../utils/appError');
 const handleDuplicateFieldsDB = (err) => {
   const regex = /dup key: \{ \w+: "(.*?)" \}/;
   const match = err.errorResponse.errmsg.match(regex)[1];
-  console.log(err);
   const message = `Duplicate field value: ${match}. Please use another value!`;
   return new AppError(message, 400);
 };
@@ -59,13 +58,11 @@ const sendErrorProd = (err, res) => {
 };
 
 module.exports = (err, req, res, next) => {
-  // console.log(err.stack);
 
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
   if (process.env.NODE_ENV === 'development') {
-    console.log(err.name);
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV?.trim() === 'production') {
     let error = {
@@ -74,8 +71,6 @@ module.exports = (err, req, res, next) => {
       stack: err.stack,
       ...err
     };
-    console.log(error.name); // This should correctly log the name property
-
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError') error = handleValidationErrorDB(error);

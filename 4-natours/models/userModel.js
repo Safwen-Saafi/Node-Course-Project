@@ -39,12 +39,12 @@ const userSchema = new mongoose.Schema({
 });
 
 
-// Mongoose Middleware
+// Mongoose Middleware to reset the password token if modified
 userSchema.pre('save', async function(next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
 
-  // Hash the password with cost of 12
+  // Hash the password with cost of 12, increasing cost affects performance but enhances encryption
   this.password = await bcrypt.hash(this.password, 12);
 
   // Delete passwordConfirm field
@@ -52,14 +52,7 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-userSchema.pre('save', function(next) {
-  if (!this.isModified('password') || this.isNew) return next();
-
-  this.passwordChangedAt = Date.now() - 1000;
-  next();
-});
-
-
+// Middleware to compare paswords in login, it's an instance method available in all documents
 userSchema.methods.correctPassword = async function(
   candidatePassword,
   userPassword

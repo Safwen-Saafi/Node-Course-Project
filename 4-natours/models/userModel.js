@@ -35,11 +35,12 @@ const userSchema = new mongoose.Schema({
           },
           message: 'Passwords are not the same!'
         }
-    }
+    },
+    passwordChangedAt: Date
 });
 
 
-// Mongoose Middleware to reset the password token if modified
+// Middleware to hash password before saving it
 userSchema.pre('save', async function(next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
@@ -60,6 +61,20 @@ userSchema.methods.correctPassword = async function(
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
+userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    // change the changeddate format to ms
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  // False means NOT changed
+  return false;
+};
 
 
 const User = mongoose.model('User', userSchema);

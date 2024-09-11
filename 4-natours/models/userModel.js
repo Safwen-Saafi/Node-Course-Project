@@ -61,6 +61,14 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+//Modify the changePasswordAt
+userSchema.pre('save', function(next) {
+  // this.new don't apply to a new document
+  if (!this.isModified('password') || this.isNew) return next();
+  // To ensure that the token is always created after the password has been changed
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
 // Middleware to compare paswords in login, it's an instance method available in all documents
 userSchema.methods.correctPassword = async function(
   candidatePassword,
@@ -94,7 +102,7 @@ userSchema.methods.createPasswordResetToken = function() {
   console.log({ resetToken }, this.passwordResetToken);
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-
+  console.log(this.passwordResetExpires);
   return resetToken;
 };
 

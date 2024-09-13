@@ -16,7 +16,6 @@ const filterObj = (obj, ...allowedFields) => {
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
-
   // SEND RESPONSE
   res.status(200).json({
     status: 'success',
@@ -51,6 +50,14 @@ exports.deleteUser = (req, res) => {
   });
 };
 
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
+});
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
@@ -64,7 +71,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   }
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated
-  // Why not using req.body to update, simply because a user can input role to be updated which is what we don't want
+  // Why not using req.body to update, simply because a user can input the role to be updated which is what we don't want
   const filteredBody = filterObj(req.body, 'name', 'email');
 
   // 3) Update user document

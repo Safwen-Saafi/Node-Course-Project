@@ -44,7 +44,12 @@ const userSchema = new mongoose.Schema({
     },
     passwordChangedAt: Date,
     passwordResetToken: String,
-    passwordResetExpires: Date
+    passwordResetExpires: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false
+    }
 });
 
 
@@ -61,6 +66,15 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+
+//Hide all of the deleted accounts, actually they are hided from the user not deleted
+userSchema.pre(/^find/, function(next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+
 //Modify the changePasswordAt
 userSchema.pre('save', function(next) {
   // this.new don't apply to a new document
@@ -69,6 +83,9 @@ userSchema.pre('save', function(next) {
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
+
+
+
 // Middleware to compare paswords in login, it's an instance method available in all documents
 userSchema.methods.correctPassword = async function(
   candidatePassword,
@@ -90,6 +107,9 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   // False means NOT changed
   return false;
 };
+
+
+
 
 userSchema.methods.createPasswordResetToken = function() {
   const resetToken = crypto.randomBytes(32).toString('hex');

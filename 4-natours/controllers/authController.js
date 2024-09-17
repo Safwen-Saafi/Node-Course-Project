@@ -48,9 +48,10 @@ exports.signup = catchAsync(async (req, res, next) => {
   createSendToken(newUser, 201, res);
 });
 
+
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-
+  
   // 1) Check if email and password exist in te req body
   if (!email || !password) {
     return next(new AppError('Please provide email and password!', 400));
@@ -124,7 +125,6 @@ exports.restrictTo = (...roles) => {
         new AppError('You do not have permission to perform this action', 403) //Forbidden
       );
     }
-
     next();
   };
 };
@@ -185,7 +185,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex');
-  console.log(Date.now());
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() + 0 * 60 * 1000 }
@@ -224,7 +223,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
   await user.save();
-  // User.findByIdAndUpdate will NOT work as intended! First validators won't run, second the pre middlewares to hash and changedAt won't work
+  // !User.findByIdAndUpdate will NOT work as intended! First validators won't run, second the pre middlewares to hash and changedAt won't work
 
   // 4) Log user in, send JWT
   createSendToken(user, 200, res);

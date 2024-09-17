@@ -81,7 +81,7 @@ const tourSchema = new mongoose.Schema(
     }
   },
   {
-    toJSON: { virtuals: true },
+    toJSON: { virtuals: true },   //Virtual fields are fields not stored in the database but calculated or derived from other fields
     toObject: { virtuals: true }
   }
 );
@@ -90,7 +90,7 @@ tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
-// DOCUMENT MIDDLEWARE: runs before .save() and .create()
+// !DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
   next();
@@ -106,12 +106,11 @@ tourSchema.pre('save', function(next) {
 //   next();
 // });
 
-// QUERY MIDDLEWARE
-// tourSchema.pre('find', function(next) {
+// !QUERY MIDDLEWARE
+// any query that starts with find
 tourSchema.pre(/^find/, function(next) {
-  this.find({ secretTour: { $ne: true } });
-
-  this.start = Date.now();
+  this.find({ secretTour: { $ne: true } }); //This line hides the secret tours to be displayed for the user
+  this.start = Date.now(); //This is used to mark the start of the query request
   next();
 });
 
@@ -120,10 +119,9 @@ tourSchema.post(/^find/, function(docs, next) {
   next();
 });
 
-// AGGREGATION MIDDLEWARE
+// !AGGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', function(next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-
   console.log(this.pipeline());
   next();
 });

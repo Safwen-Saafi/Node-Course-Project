@@ -1,10 +1,10 @@
 const express = require('express');
-const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
-const hpp = require('hpp');
+const morgan = require('morgan'); //Middleware logger
+const rateLimit = require('express-rate-limit'); //Limits API requests per user
+const helmet = require('helmet'); //Sets various HTTP headers to protect against common vulnerabilities.
+const mongoSanitize = require('express-mongo-sanitize');  //Prevents MongoDB query injection attacks by removing keys containing $ or . from user-supplied data.
+const xss = require('xss-clean');  //Sanitizes user input to prevent XSS (Cross-Site Scripting) attacks by removing malicious HTML or script tags
+const hpp = require('hpp'); //(HTTP Parameter Pollution) middleware, which protects against HTTP parameter pollution attacks by blocking duplicate query parameters in requests.
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -30,7 +30,7 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// Body parser, reading data from body into req.body
+// Body parser, reading data from body into req.body, to prevent DOS attacks from large payloads
 app.use(express.json({ limit: '10kb' }));
 
 // Data sanitization against NoSQL query injection
@@ -39,7 +39,7 @@ app.use(mongoSanitize());
 // Data sanitization against XSS
 app.use(xss());
 
-// Prevent parameter pollution
+// Prevent parameter pollution, these parameters can appear twice or more in a query request
 app.use(
   hpp({
     whitelist: [

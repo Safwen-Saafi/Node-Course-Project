@@ -57,8 +57,8 @@ exports.createTour = catchAsync(async (req, res, next) => {
 
 exports.updateTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
+    new: true,  //Tell smongoose to return the naw updated object
+    runValidators: true  //Run the validators for the updated object
   });
 
   if (!tour) {
@@ -86,6 +86,9 @@ exports.deleteTour = catchAsync(async (req, res, next) => {
   });
 });
 
+
+
+//^Returns the tours by difficulty
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
@@ -118,12 +121,15 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
   });
 });
 
+
+
+//^Returns the tours by month
 exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
-  const year = req.params.year * 1; // 2021
+  const year = req.params.year * 1; // ex: 2025
 
   const plan = await Tour.aggregate([
     {
-      $unwind: '$startDates'
+      $unwind: '$startDates' //If a tour has 3 starting dates, the unwind will return 3 of the same tours each one with a different start date
     },
     {
       $match: {

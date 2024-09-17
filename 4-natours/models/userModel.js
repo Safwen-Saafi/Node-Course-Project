@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema({
 });
 
 
-// Middleware to hash password before saving it
+// !Middleware to hash password before saving it
 userSchema.pre('save', async function(next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
@@ -61,13 +61,13 @@ userSchema.pre('save', async function(next) {
   // Hash the password with cost of 12, increasing cost affects performance but enhances encryption
   this.password = await bcrypt.hash(this.password, 12);
 
-  // Delete passwordConfirm field
+  // Delete passwordConfirm field, we used it for checking so we don't keep it
   this.passwordConfirm = undefined;
   next();
 });
 
 
-//Hide all of the deleted accounts, actually they are hided from the user not deleted
+// !Hide all of the deleted accounts, actually they are hided from the user not deleted
 userSchema.pre(/^find/, function(next) {
   // this points to the current query
   this.find({ active: { $ne: false } });
@@ -75,7 +75,7 @@ userSchema.pre(/^find/, function(next) {
 });
 
 
-//Modify the changePasswordAt
+// !Modify the changePasswordAt
 userSchema.pre('save', function(next) {
   // this.new don't apply to a new document
   if (!this.isModified('password') || this.isNew) return next();
@@ -86,13 +86,15 @@ userSchema.pre('save', function(next) {
 
 
 
-// Middleware to compare paswords in login, it's an instance method available in all documents
+// !Middleware to compare paswords in login, it's an instance method available in all documents
 userSchema.methods.correctPassword = async function(
   candidatePassword,
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+
 
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   if (this.passwordChangedAt) {
@@ -125,6 +127,8 @@ userSchema.methods.createPasswordResetToken = function() {
   console.log(this.passwordResetExpires);
   return resetToken;
 };
+
+
 
 const User = mongoose.model('User', userSchema);
 

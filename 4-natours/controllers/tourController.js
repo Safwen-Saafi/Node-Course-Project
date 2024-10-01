@@ -57,7 +57,7 @@ exports.createTour = catchAsync(async (req, res, next) => {
 
 exports.updateTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,  //Tell smongoose to return the naw updated object
+    new: true,  //Tells mongoose to return the new updated object
     runValidators: true  //Run the validators for the updated object
   });
 

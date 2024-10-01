@@ -119,7 +119,8 @@ tourSchema.post(/^find/, function(docs, next) {
   next();
 });
 
-// !AGGREGATION MIDDLEWARE
+// !AGGREGATION MIDDLEWARE 
+// for any aggregation pipeline { $group: { _id: "$difficulty", avgPrice: { $avg: "$price" } } }
 tourSchema.pre('aggregate', function(next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   console.log(this.pipeline());

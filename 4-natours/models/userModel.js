@@ -95,7 +95,7 @@ userSchema.methods.correctPassword = async function(
 };
 
 
-
+// !Returns true if the password has been changed after the issue of the JWT token
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   if (this.passwordChangedAt) {
     // change the changeddate format to ms
@@ -123,7 +123,7 @@ userSchema.methods.createPasswordResetToken = function() {
 
   console.log({ resetToken }, this.passwordResetToken);
 
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 minutes
   console.log(this.passwordResetExpires);
   return resetToken;
 };

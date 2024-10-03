@@ -112,17 +112,14 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 
 
 
-
+// !Creates the password reset token sent via main
 userSchema.methods.createPasswordResetToken = function() {
   const resetToken = crypto.randomBytes(32).toString('hex');
-
+  //the token stored in the database gets hashed for security
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
-
-  console.log({ resetToken }, this.passwordResetToken);
-
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 minutes
   console.log(this.passwordResetExpires);
   return resetToken;

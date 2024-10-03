@@ -82,10 +82,12 @@ const tourSchema = new mongoose.Schema(
   },
   {
     toJSON: { virtuals: true },   //Virtual fields are fields not stored in the database but calculated or derived from other fields
-    toObject: { virtuals: true }
+    toObject: { virtuals: true }  //These two lines include virtual fields and define custom transformations when converting documents to different formats.
   }
 );
 
+
+//Just a simple example on how to ceate a virtual field
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });

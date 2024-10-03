@@ -13,7 +13,7 @@ const { protect } = require('./../controllers/authController');
 
 const router = express.Router();
 
-router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
+router.route('/top-5-rated').get(aliasTopTours, getAllTours);
 router.route('/tours-stats').get(getTourStats);
 router.route('/').get(protect, getAllTours).post(createTour);
 router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);

@@ -1,7 +1,7 @@
 const AppError = require('./../utils/appError');
 
 
-
+// error occurs when you try to insert a record with a value in a field that is required to be unique 
 const handleDuplicateFieldsDB = (err) => {
   const regex = /dup key: \{ \w+: "(.*?)" \}/;
   const match = err.errorResponse.errmsg.match(regex)[1];
@@ -10,14 +10,14 @@ const handleDuplicateFieldsDB = (err) => {
 };
 
 
-
+// s error happens when the value passed to a query is of an incorrect type or format. For example, trying to find a document by an invalid ObjectId.
 const handleCastErrorDB = err => {
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
 };
 
 
-
+//  error occurs when the data provided does not meet the validation criteria set in the schema.
 const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
 
@@ -25,9 +25,13 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+
+// error occurs when a JWT (JSON Web Token) is invalid, such as when it is tampered with or malformed.
 const handleJWTError = () =>
   new AppError('Invalid token. Please log in again!', 401);
 
+
+//  error occurs when a JWT has expired, meaning the token was valid but is now past its expiration time.
 const handleJWTExpiredError = () =>
   new AppError('Your token has expired! Please log in again.', 401);
 

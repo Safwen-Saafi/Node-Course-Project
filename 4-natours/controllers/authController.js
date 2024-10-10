@@ -143,7 +143,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // 2) Generate the random reset token
   const resetToken = user.createPasswordResetToken();
-  await user.save({ validateBeforeSave: false });
+  await user.save({ validateBeforeSave: false }); //useless to verify because we updated one field only
   
   // 3) Send it to user's email
   const resetURL = `${req.protocol}://${req.get(

@@ -10,7 +10,7 @@ const handleDuplicateFieldsDB = (err) => {
 };
 
 
-// s error happens when the value passed to a query is of an incorrect type or format. For example, trying to find a document by an invalid ObjectId.
+// error happens when the value passed to a query is of an incorrect type or format. For example, trying to find a document by an invalid ObjectId.
 const handleCastErrorDB = err => {
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
